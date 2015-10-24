@@ -2,7 +2,6 @@ package funsets
 
 import org.scalatest.FunSuite
 
-
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -46,7 +45,6 @@ class FunSetSuite extends FunSuite {
   // test("adding ints") {
   //   assert(1 + 2 === 3)
   // }
-
 
   import FunSets._
 
@@ -110,5 +108,32 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("forall verifies the predicates on each element") {
+    new TestSets {
+      val s = union(union(s1, s2), s3)
+      val negSet = union(singletonSet(-1), singletonSet(-2))
+      val mixedSet = union(s, negSet)
+      assert(forall(s, (x: Int) => x > 0), "Forall greater than 0")
+      assert(!forall(negSet, (x: Int) => x > 0), "Forall greater than 0, fails for negatove values")
+      assert(!forall(mixedSet, (x: Int) => x > 0), "For checks them all!")
+    }
+  }
+
+  test("Exists just needs one element to be true") {
+    new TestSets {
+      val s = union(union(s1, s2), s3)
+      assert(exists(s, (x: Int) => x % 2 == 0), "Set contains even numbers")
+      assert(exists(s, (x: Int) => x % 2 == 1), "Set contains odd numbers")
+      assert(!exists(s, (x: Int) => x < 0), "No negatives in this set")
+    }
+  }
+
+  test("Map can create a set of even numbers") {
+    new TestSets {
+      val s = union(union(s1, s2), s3)
+      val evens = map(s, (x: Int) => (x * 2))
+      assert(forall(evens, (x: Int) => x % 2 == 0), "All elements are even")
+    }
+  }
 
 }
