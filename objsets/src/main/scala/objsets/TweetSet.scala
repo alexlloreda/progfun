@@ -79,7 +79,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList
 
   /**
    * The following methods are already implemented
@@ -118,6 +118,8 @@ class Empty extends TweetSet {
 
   def mostRetweetedAcc(t: Tweet): Tweet = t
 
+  def descendingByRetweet: TweetList = Nil
+
   /**
    * The following methods are already implemented
    */
@@ -141,9 +143,7 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   }
 
   def union(that: TweetSet): TweetSet = {
-    val uSet = left.union(that).union(right)
-    if (that.contains(elem)) uSet
-    else uSet incl elem
+    right.union(left.union(that)).incl(elem)
   }
 
   def mostRetweeted: Tweet = {
@@ -156,6 +156,10 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     else rightMax
   }
 
+  def descendingByRetweet: TweetList = {
+    val t = mostRetweeted
+    new Cons(t, remove(t).descendingByRetweet)
+  }
   /**
    * The following methods are already implemented
    */
@@ -207,15 +211,15 @@ class Cons(val head: Tweet, val tail: TweetList) extends TweetList {
 object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
-
-  lazy val googleTweets: TweetSet = ???
-  lazy val appleTweets: TweetSet = ???
+  def wordFilter(list: List[String])(t: Tweet): Boolean = list.exists((s: String) => t.text.contains(s))
+  lazy val googleTweets: TweetSet = TweetReader.allTweets filter (wordFilter(google))
+  lazy val appleTweets: TweetSet = TweetReader.allTweets filter (wordFilter(apple))
 
   /**
    * A list of all tweets mentioning a keyword from either apple or google,
    * sorted by the number of retweets.
    */
-  lazy val trending: TweetList = ???
+  lazy val trending: TweetList = (googleTweets union appleTweets).descendingByRetweet
 }
 
 object Main extends App {
