@@ -72,7 +72,17 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-  def times(chars: List[Char]): List[(Char, Int)] = ???
+  def times(chars: List[Char]): List[(Char, Int)] = {
+    def merge(char: Char, pairs: List[(Char, Int)]): List[(Char, Int)] = pairs match {
+      case List() => List((char, 1))
+      case (c, i) :: xs => {
+        if (c == char) (c, i + 1) :: xs
+        else (c, i) :: merge(char, xs)
+      }
+    }
+    if (chars.isEmpty) List()
+    else merge(chars.head, times(chars.tail))
+  }
 
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
@@ -81,7 +91,14 @@ object Huffman {
    * head of the list should have the smallest weight), where the weight
    * of a leaf is the frequency of the character.
    */
-  def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = ???
+  def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = {
+    val sorted = freqs.sortWith(_._2 < _._2)
+    def buildLeafs(pairs: List[(Char, Int)]): List[Leaf] = pairs match {
+      case List()       => List()
+      case (c, i) :: xs => Leaf(c, i) :: buildLeafs(xs)
+    }
+    buildLeafs(sorted)
+  }
 
   /**
    * Checks whether the list `trees` contains only one single code tree.
