@@ -103,7 +103,14 @@ object Huffman {
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
-  def singleton(trees: List[CodeTree]): Boolean = ???
+  def singleton(trees: List[CodeTree]): Boolean = {
+    def countCheck(list: List[CodeTree], count: Int): Boolean = {
+      if (list.isEmpty) count == 1
+      else if (count >= 1) false
+      else countCheck(list.tail, count + 1)
+    }
+    countCheck(trees, 0)
+  }
 
   /**
    * The parameter `trees` of this function is a list of code trees ordered
@@ -117,7 +124,11 @@ object Huffman {
    * If `trees` is a list of less than two elements, that list should be returned
    * unchanged.
    */
-  def combine(trees: List[CodeTree]): List[CodeTree] = ???
+  def combine(trees: List[CodeTree]): List[CodeTree] = trees match {
+    case x :: y :: list => makeCodeTree(x, y) :: list
+    case x :: Nil       => trees
+    case Nil            => trees
+  }
 
   /**
    * This function will be called in the following way:
