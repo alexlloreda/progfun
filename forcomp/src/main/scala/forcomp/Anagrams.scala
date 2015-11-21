@@ -99,7 +99,20 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+
+    def decreaseCount(p: (Char, Int)): List[Occurrences] = {
+      if (p._2 == 0) List(Nil)
+      else List(p)::decreaseCount(p._1,p._2-1)
+    }
+    //println("Combinations of " + occurrences)
+    if (occurrences.isEmpty) List(Nil)
+    else
+      for {
+        subResult <- combinations(occurrences.tail)
+        pair <- decreaseCount(occurrences.head)
+      } yield (pair:::subResult)
+  }
 
   /**
    * Subtracts occurrence list `y` from occurrence list `x`.
@@ -112,7 +125,15 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    def removeOccurrence(a: Map[Char, Int], o: (Char, Int)): Map[Char, Int] = {
+      val (k, v) = o
+      if (a(k) == v) a - k
+      else a updated (k, a(k) - v)
+    }
+    //println("subtracting " + y + " from " + x)
+    (y foldLeft x.toMap)(removeOccurrence).toList.sortWith((a, b) => a._1 < b._1)
+  }
 
   /**
    * Returns a list of all anagram sentences of the given sentence.
@@ -155,5 +176,37 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    def finishSentence(ocs: Occurrences): List[Sentence] = {
+      if (ocs.isEmpty) List(Nil)
+      else
+        for {
+          cs <- combinations(ocs)
+          if dictionaryByOccurrences.contains(cs)
+          sentence <- finishSentence(subtract(ocs, cs))
+          w <- dictionaryByOccurrences(cs)
+        } yield (w :: sentence)
+
+      /*
+      if (ocs.isEmpty) {
+        println("Empty occurrences")
+        List(Nil)
+      }
+      else {
+        combinations(ocs).withFilter(cs => dictionaryByOccurrences.contains(cs)).flatMap(cs =>
+          dictionaryByOccurrences(cs).flatMap(w =>
+            finishSentence(subtract(ocs, cs)).map(sentence => w :: sentence)
+          )
+
+        {
+          val words = dictionaryByOccurrences(cs)
+          val p = finishSentence(subtract(ocs, cs))
+          p.flatMap(s => words.map(w => w::s))
+        }
+        )
+      }*/
+    }
+
+    finishSentence(sentenceOccurrences(sentence))
+  }
 }

@@ -67,6 +67,13 @@ class AnagramsSuite extends FunSuite  {
     assert(combinations(abba).toSet === abbacomb.toSet)
   }
 
+  test("subtract: helloworld-world") {
+    val sentence = List("hello", "world")
+    val occurrences = sentenceOccurrences(sentence)
+    val hOccus = wordOccurrences("hello")
+    val wOccus = wordOccurrences("world")
+    assert(subtract(occurrences, wOccus) === hOccus)
+  }
 
 	test("sentence anagrams: []") {
     val sentence = List()
