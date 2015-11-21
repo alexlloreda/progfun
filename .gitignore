@@ -20,3 +20,6 @@ project/plugins/project/
 .classpath
 .settings/**
 .cache-main
+
+# Intellij IDEA specific
+**/.idea
