@@ -40,6 +40,18 @@ class BloxorzSuite extends FunSuite {
     val optsolution = List(Right, Right, Down, Right, Right, Right, Down)
   }
 
+  trait Level7 extends SolutionChecker {
+    val level =
+    """--------oooo---
+      |--------oooo---
+      |ooo-----o--oooo
+      |oSooooooo---oTo
+      |ooo----ooo--ooo
+      |ooo----ooo--ooo
+      |-ooo---o-------
+      |--oooooo-------""".stripMargin
+  }
+
 
 	test("terrain function level 1") {
     new Level1 {
@@ -97,6 +109,19 @@ class BloxorzSuite extends FunSuite {
 	test("optimal solution length for level 1") {
     new Level1 {
       assert(solution.length == optsolution.length)
+    }
+  }
+
+  test("legalNeighbours from start on level 7") {
+    new Level7 {
+      println("Start block: " + startBlock)
+      println(startBlock.legalNeighbors)
+    }
+  }
+  test("solution for level7") {
+    new Level7 {
+      println(solution)
+      assert(solve(solution) == Block(goal, goal))
     }
   }
 
