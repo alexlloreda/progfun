@@ -58,10 +58,34 @@ class BloxorzSuite extends FunSuite {
 
 	test("findChar level 1") {
     new Level1 {
-      assert(startPos == Pos(1,1))
+      assert(startPos === Pos(1,1))
     }
   }
 
+  test("neighborsWithHistory for level 1") {
+    new Level1 {
+      val expectedSet = Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      )
+
+      assert(expectedSet === neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)).toSet)
+    }
+  }
+
+  test("newNeighbourWithHistory for level 1") {
+    new Level1 {
+      val neighbours = Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      ).toStream
+      val explored = Set(Block(Pos(1,2),Pos(1,3)), Block(Pos(1,1),Pos(1,1)))
+      
+      val expectedSet = Set((Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up)))
+
+      assert(expectedSet === newNeighborsOnly(neighbours, explored).toSet)
+    }
+  }
 
 	test("optimal solution for level 1") {
     new Level1 {
